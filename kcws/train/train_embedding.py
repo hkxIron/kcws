@@ -186,10 +186,15 @@ def main(unused_argv):
   with graph.as_default():
     model = Model(FLAGS.embedding_size, FLAGS.num_hidden)
     print("train data path:", trainDataPath)
+    # 读取训练集batch大小的feature和label，各为80大小的数组
     X, Y = inputs(trainDataPath)
+    # 读取测试集所有数据的feature和label，各为80大小的数组
     tX, tY = do_load_data(tf.app.flags.FLAGS.test_data_path)
+    # 计算训练集的损失
     total_loss = model.loss(X, Y)
+    # 使用AdamOptimizer优化方法
     train_op = train(total_loss)
+    # 在测试集上做评测
     calc_correct_op = model.test_correct_num()
     sv = tf.train.Supervisor(graph=graph, logdir=FLAGS.log_dir)
     with sv.managed_session(master='') as sess:
